@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using course_app.Data;
+using course_app.Helpers;
 using course_app.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -66,6 +70,7 @@ namespace course_app
 
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IJwtTokenService, JwtTokenService>();
+            services.AddScoped<IPasswordHashService, PasswordHashService>();
 
         }
 
@@ -75,6 +80,25 @@ namespace course_app
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else 
+            {
+                //app.UseExceptionHandler(builder =>
+                //{
+                //    builder.Run(async context => {
+                //        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                //        var error = context.Features.Get<IExceptionHandlerFeature>();
+
+                //        if (error != null)
+                //        {
+                //            context.Response.AddApplicationError(error.Error.Message);
+                //            await context.Response.WriteAsync(error.Error.Message);
+                //        }
+                //    });
+                //});
+
+                app.UseExceptionHandler("/error");
             }
 
             app.UseSwagger();
@@ -98,6 +122,7 @@ namespace course_app
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }
