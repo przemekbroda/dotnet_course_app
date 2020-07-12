@@ -23,12 +23,23 @@ namespace course_app.Service
 
         public string GenerateAccessToken(User user, DateTime expireAt)
         {
-            return GenerateToken(user, expireAt, _config.GetSection("AppSettings:Token").Value);
+            var claims = new[] {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+            };
+
+            return GenerateToken(user, expireAt, _config.GetSection("AppSettings:Token").Value, claims);
         }
 
         public string GenerateRefreshToken(User user, DateTime expireAt)
         {
-            return GenerateToken(user, expireAt, _config.GetSection("AppSettings:RefreshToken").Value);
+            var claims = new[] {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim("refresh-type", true.ToString())
+            };
+
+            return GenerateToken(user, expireAt, _config.GetSection("AppSettings:RefreshToken").Value, claims);
         }
 
         public bool ValidateRefreshToken(string refreshToken, out int id)
@@ -57,20 +68,29 @@ namespace course_app.Service
                 return false;
             }
 
-            var idClaim = claims.FindFirst(ClaimTypes.NameIdentifier).Value;
+            try 
+            {
+                var refreshType = claims.FindFirst("refresh-type")?.Value ?? null;
+                if (refreshType == null || !bool.Parse(refreshType))
+                {
+                    id = -1;
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+                id = -1;
+                return false;
+            }
+
+            var idClaim = claims.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null;
 
             id = idClaim == null ? -1 : int.Parse(idClaim);
-
             return true;
         }
 
-        private string GenerateToken(User user, DateTime expireAt, string secret) 
+        private string GenerateToken(User user, DateTime expireAt, string secret, IEnumerable<Claim> claims) 
         {
-            var claims = new[] {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-            };
-
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
