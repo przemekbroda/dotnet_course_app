@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using course_app.Data;
 using course_app.Helpers;
 using course_app.Service;
@@ -38,7 +39,7 @@ namespace course_app
         {
             services.AddDbContext<DataContext>(x => x.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddSwaggerGen(c =>
             {
@@ -56,6 +57,8 @@ namespace course_app
 
             services.AddCors();
 
+            services.AddAutoMapper(typeof(DatingRepository).Assembly);
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -71,6 +74,8 @@ namespace course_app
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<IPasswordHashService, PasswordHashService>();
+            services.AddScoped<ISeed, Seed>();
+            services.AddScoped<IDatingRepository, DatingRepository>();
 
         }
 

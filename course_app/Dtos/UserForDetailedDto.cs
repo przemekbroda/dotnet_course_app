@@ -1,13 +1,12 @@
-﻿using System;
+﻿using course_app.Models;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace course_app.Models
+namespace course_app.Dtos
 {
-    [Table("users")]
-    public class User
+    public class UserForDetailedDto
     {
         public int Id { get; set; }
         public string Username { get; set; }
@@ -23,6 +22,7 @@ namespace course_app.Models
         public string Interests { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
-        public ICollection<Photo> Photos { get; set; }
+        public string PhotoUrl { get; set; }
+        public ICollection<Photo> Photos{ get; set; }
     }
 }
