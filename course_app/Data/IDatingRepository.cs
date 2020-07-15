@@ -12,6 +12,8 @@ namespace course_app.Data
         void Delete<T>(T entity) where T : class;
         Task<bool> SaveAll();
         Task<IEnumerable<User>> GetUsers();
+        Task<User> GetUserWithPhotos(int id);
         Task<User> GetUser(int id);
+        Task<Photo> GetPhoto(int id);
     }
 }

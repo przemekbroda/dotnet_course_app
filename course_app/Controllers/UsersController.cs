@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using course_app.Data;
@@ -38,11 +39,28 @@ namespace course_app.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> getUser(int id)
         {
-            var user = await _datingRepo.GetUser(id);
+            var user = await _datingRepo.GetUserWithPhotos(id);
 
             var userToReturn = _mapper.Map<UserForDetailedDto>(user);
 
             return Ok(userToReturn);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto updateDto)
+        {
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value)) return Unauthorized();
+
+            var usetFromRepo = await _datingRepo.GetUserWithPhotos(id);
+
+            _mapper.Map(updateDto, usetFromRepo);
+
+            if (await _datingRepo.SaveAll()) 
+            {
+                return Ok();
+            }
+
+            throw new Exception($"Could not update user with id {id}");
         }
 
     }

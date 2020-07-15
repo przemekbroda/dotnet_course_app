@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace course_app.Controllers
 {
-    [ApiExplorerSettings(IgnoreApi = true)]
+    //[ApiExplorerSettings(IgnoreApi = true)]
     [Route("api/[controller]")]
     [ApiController]
     public class SeedController : ControllerBase

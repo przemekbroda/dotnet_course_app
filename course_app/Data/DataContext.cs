@@ -1,5 +1,6 @@
 ﻿using course_app.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace course_app.Data
 {
@@ -10,7 +11,5 @@ namespace course_app.Data
         public DbSet<Photo> Photos { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
-
-
     }
 }

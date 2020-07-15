@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -34,10 +35,16 @@ namespace course_app
 
         public IConfiguration Configuration { get; }
 
+        public static readonly ILoggerFactory MyLoggerFactory
+    = LoggerFactory.Create(builder => { builder.AddConsole(); });
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DataContext>(x => x.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DataContext>(x => {
+                x.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
+                x.UseLoggerFactory(MyLoggerFactory);
+            });
 
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
@@ -71,6 +78,8 @@ namespace course_app
                 };
             });
 
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
+
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<IPasswordHashService, PasswordHashService>();
@@ -88,21 +97,6 @@ namespace course_app
             }
             else 
             {
-                //app.UseExceptionHandler(builder =>
-                //{
-                //    builder.Run(async context => {
-                //        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-                //        var error = context.Features.Get<IExceptionHandlerFeature>();
-
-                //        if (error != null)
-                //        {
-                //            context.Response.AddApplicationError(error.Error.Message);
-                //            await context.Response.WriteAsync(error.Error.Message);
-                //        }
-                //    });
-                //});
-
                 app.UseExceptionHandler("/error");
             }
 

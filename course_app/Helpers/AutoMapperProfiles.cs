@@ -14,8 +14,20 @@ namespace course_app.Helpers
         public AutoMapperProfiles()
         {
             CreateMap<User, UserForDetailedDto>()
-                .ForMember(dest => dest);
-            CreateMap<User, UserForListDto>();
+                .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.Photos.FirstOrDefault(p => p.IsMain)))
+                .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.DateOfBirth.CalculateAge()));
+                
+            CreateMap<User, UserForListDto>()
+                .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.Photos.FirstOrDefault(p => p.IsMain)))
+                .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.DateOfBirth.CalculateAge()));
+
+            CreateMap<UserForUpdateDto, User>();
+
+            CreateMap<Photo, PhotoForDetailedDto>();
+
+            CreateMap<PhotoForCreationDto, Photo>();
+
+            CreateMap<Photo, PhotoForReturnDto>();
         }
 
     }

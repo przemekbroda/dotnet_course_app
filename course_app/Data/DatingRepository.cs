@@ -26,9 +26,9 @@ namespace course_app.Data
             _context.Remove(entity);
         }
 
-        public async Task<User> GetUser(int id)
+        public async Task<User> GetUserWithPhotos(int id)
         {
-            var users = await _context.Users.Include(u => u.Photos).FirstOrDefaultAsync();
+            var users = await _context.Users.Include(u => u.Photos).FirstOrDefaultAsync(u => u.Id == id);
 
             return users;
         }
@@ -40,9 +40,23 @@ namespace course_app.Data
             return users;
         }
 
+        public async Task<User> GetUser(int id)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            return user;
+        }
+
         public async Task<bool> SaveAll()
         {
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<Photo> GetPhoto(int id)
+        {
+            var photo = await _context.Photos.FirstOrDefaultAsync(p => p.Id == id);
+
+            return photo;
         }
     }
 }
