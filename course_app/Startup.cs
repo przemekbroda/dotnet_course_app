@@ -75,6 +75,7 @@ namespace course_app
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
                 };
             });
 

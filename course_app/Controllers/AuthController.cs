@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using course_app.Data;
 using course_app.Dtos;
 using course_app.Models;
@@ -25,12 +26,14 @@ namespace course_app.Controllers
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
         private readonly IJwtTokenService _tokenService;
+        private readonly IMapper _mapper;
 
-        public AuthController(IAuthRepository repo, IJwtTokenService tokenService, IConfiguration config)
+        public AuthController(IAuthRepository repo, IJwtTokenService tokenService, IConfiguration config, IMapper mapper)
         {
             _repo = repo;
             _tokenService = tokenService;
             _config = config;
+            _mapper = mapper;
         }
 
         [HttpPost("register")]
@@ -42,11 +45,13 @@ namespace course_app.Controllers
 
             if (await _repo.UserExists(registerDto.Username)) return BadRequest("User already exists");
 
-            var userToCreate = new User { Username = registerDto.Username };
+            var userToCreate = _mapper.Map<User>(registerDto);
 
             var createdUser = await _repo.Register(userToCreate, registerDto.Password);
 
-            return StatusCode(201);
+            var userToReturn = _mapper.Map<UserForDetailedDto>(createdUser);
+
+            return CreatedAtRoute("GetUser", new { controller = "Users", id = createdUser.Id }, userToReturn);
         }
 
         [HttpPost("login")]
@@ -58,8 +63,8 @@ namespace course_app.Controllers
 
             return Ok(new
             {
-                token = _tokenService.GenerateAccessToken(userFromRepo, DateTime.Now.AddDays(1)),
-                refreshToken = _tokenService.GenerateRefreshToken(userFromRepo, DateTime.Now.AddDays(30))
+                token = _tokenService.GenerateAccessToken(userFromRepo, DateTime.UtcNow.AddDays(1)),
+                refreshToken = _tokenService.GenerateRefreshToken(userFromRepo, DateTime.UtcNow.AddDays(30))
             }); 
         }
 

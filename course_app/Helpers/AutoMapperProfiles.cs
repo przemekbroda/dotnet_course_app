@@ -28,6 +28,8 @@ namespace course_app.Helpers
             CreateMap<PhotoForCreationDto, Photo>();
 
             CreateMap<Photo, PhotoForReturnDto>();
+
+            CreateMap(typeof(PagedList<>), typeof(PagedListDto<>));
         }
 
     }

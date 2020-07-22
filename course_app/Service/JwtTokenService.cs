@@ -54,7 +54,8 @@ namespace course_app.Service
                 ValidateLifetime = true,
                 ValidateAudience = false,
                 ValidateIssuer = false,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:RefreshToken").Value))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:RefreshToken").Value)),
+                ClockSkew = TimeSpan.Zero
             };
 
             ClaimsPrincipal claims;
