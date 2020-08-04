@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
@@ -18,9 +19,11 @@ namespace course_app.Helpers
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            //var messageReceivedContext = new MessageReceivedContext(Context, Scheme, Options);
+            var principal = new ClaimsPrincipal();
 
-            return AuthenticateResult.NoResult();
+            var ticket = new AuthenticationTicket(principal, "brrr");
+            return AuthenticateResult.Success(ticket);
+
         }
     }
 }

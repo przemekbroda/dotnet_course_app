@@ -35,8 +35,7 @@ namespace course_app
 
         public IConfiguration Configuration { get; }
 
-        public static readonly ILoggerFactory MyLoggerFactory
-    = LoggerFactory.Create(builder => { builder.AddConsole(); });
+        public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
